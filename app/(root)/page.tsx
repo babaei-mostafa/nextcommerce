@@ -8,7 +8,7 @@ export const metadata = {
 const HomePage = () => {
   return (
     <>
-      <ProductList data={sampleData.products} title="Newest Arrivals" limit={3} />
+      <ProductList data={sampleData.products} title="Newest Arrivals" />
     </>
   );
 };

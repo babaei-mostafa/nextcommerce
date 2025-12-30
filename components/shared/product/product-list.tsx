@@ -1,3 +1,5 @@
+import ProductCard from "./product-card";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   data: any;
@@ -13,7 +15,7 @@ const ProductList = ({ data, title, limit }: Props) => {
       {limitedData && limitedData.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {limitedData.map((product: any) => (
-            <div key={`${product.slug}`}>{product.name}</div>
+            <ProductCard key={product.slug} product={product} />
           ))}
         </div>
       ) : (
