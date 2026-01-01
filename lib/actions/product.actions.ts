@@ -1,21 +1,22 @@
 "use server";
-import { PrismaClient } from "@/lib/generated/prisma";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { converToPlainObject } from "../utils";
+import { prisma } from "@/db/prisma";
+import { convertToPlainObject } from "../utils";
 import { LATEST_PRODUCTS_LIMIT } from "../constants";
-
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-});
+import { Product } from "@/types";
 
 // Get latest products
 export async function getLatestProducts() {
-  const prisma = new PrismaClient({ adapter });
-
   const data = await prisma.product.findMany({
     take: LATEST_PRODUCTS_LIMIT,
     orderBy: { createdAt: "desc" },
   });
 
-  return converToPlainObject(data);
+  return convertToPlainObject(data) as unknown as Product[];
+}
+
+// Get single product by its slug
+export async function getProductBySlug(slug: string) {
+  return await prisma.product.findFirst({
+    where: { slug },
+  });
 }

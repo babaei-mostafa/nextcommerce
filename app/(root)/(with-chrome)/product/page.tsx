@@ -1,5 +1,6 @@
 import ProductList from "@/components/shared/product/product-list";
 import { getLatestProducts } from "@/lib/actions/product.actions";
+import { Product } from "@/types";
 
 export const metadata = {
   title: "Home",
@@ -7,11 +8,7 @@ export const metadata = {
 
 const HomePage = async () => {
   const latestProducts = await getLatestProducts();
-  return (
-    <>
-      <ProductList data={latestProducts} title="Newest Arrivals" />
-    </>
-  );
+  return <ProductList data={latestProducts} title="Newest Arrivals" />;
 };
 
 export default HomePage;

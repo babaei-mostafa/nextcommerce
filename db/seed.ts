@@ -10,7 +10,6 @@ const adapter = new PrismaPg({
 });
 
 async function main() {
-  console.log(process.env.DATABASE_URL);
   const prisma = new PrismaClient({
     adapter,
   });

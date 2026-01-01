@@ -1,19 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Card,
-  CardAction,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import ProductPrice from "./product-price";
+import { Product } from "@/types";
 
 interface Props {
-  product: any;
+  product: Product;
 }
 
 const ProductCard = ({ product }: Props) => {
@@ -29,9 +26,6 @@ const ProductCard = ({ product }: Props) => {
             priority
           />
         </Link>
-        {/* <CardTitle>{product.name}</CardTitle>
-        <CardDescription>{product.description}</CardDescription>
-        <CardAction>Card Action</CardAction> */}
       </CardHeader>
       <CardContent className="p-4 grid gap-4">
         <div className="text-xs">{product.brand}</div>
