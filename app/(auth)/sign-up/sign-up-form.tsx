@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { startTransition, useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signUpDefaultValues } from "@/lib/constants";
 import { signUpUser } from "@/lib/actions/user.actions";
+import { signUpFormSchema } from "@/lib/validators";
 
 interface Props {
   callbackUrl: string;
@@ -19,6 +20,33 @@ const SignUpForm = ({ callbackUrl }: Props) => {
     message: "",
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const values = Object.fromEntries(formData);
+
+    const parsed = signUpFormSchema.safeParse(values);
+
+    if (!parsed.success) {
+      const fieldErrors: Record<string, string> = {};
+      parsed.error.issues.forEach((issue) => {
+        const field = issue.path[0] as string;
+        fieldErrors[field] = issue.message;
+      });
+
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
+    startTransition(() => {
+      action(formData);
+    });
+  };
+
   const SignUpButton = () => {
     const { pending } = useFormStatus();
 
@@ -29,7 +57,7 @@ const SignUpForm = ({ callbackUrl }: Props) => {
     );
   };
   return (
-    <form action={action}>
+    <form onSubmit={handleSubmit}>
       <input type="hidden" name="callbackUrl" value={callbackUrl} />
       <div className="space-y-6">
         <div>
@@ -38,21 +66,25 @@ const SignUpForm = ({ callbackUrl }: Props) => {
             id="name"
             name="name"
             type="text"
-            required
             autoComplete="name"
             defaultValue={signUpDefaultValues.name}
           />
+          {errors.name && (
+            <p className="text-sm text-destructive">{errors.name}</p>
+          )}
         </div>
         <div>
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             name="email"
-            type="email"
-            required
+            type="text"
             autoComplete="email"
             defaultValue={signUpDefaultValues.email}
           />
+          {errors.email && (
+            <p className="text-sm text-destructive">{errors.email}</p>
+          )}
         </div>
         <div>
           <Label htmlFor="email">Password</Label>
@@ -60,10 +92,12 @@ const SignUpForm = ({ callbackUrl }: Props) => {
             id="password"
             name="password"
             type="password"
-            required
             autoComplete="password"
             defaultValue={signUpDefaultValues.password}
           />
+          {errors.password && (
+            <p className="text-sm text-destructive">{errors.password}</p>
+          )}
         </div>
         <div>
           <Label htmlFor="confirmPassword">Confirm Password</Label>
@@ -71,10 +105,12 @@ const SignUpForm = ({ callbackUrl }: Props) => {
             id="confirmPassword"
             name="confirmPassword"
             type="password"
-            required
             autoComplete="password"
             defaultValue={signUpDefaultValues.confirmPassword}
           />
+          {errors.confirmPassword && (
+            <p className="text-sm text-destructive">{errors.confirmPassword}</p>
+          )}
         </div>
         <div>
           <SignUpButton />
