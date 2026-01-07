@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -26,7 +27,6 @@ type ZodIssue = {
 export function extractZodIssues(error: unknown): ZodIssue[] | null {
   if (!error || typeof error !== "object") return null;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const err = error as any;
 
   if (Array.isArray(err.issues)) return err.issues;
@@ -48,7 +48,7 @@ export type ActionError = {
   fieldErrors?: Record<string, string>;
 };
 
-export function parseActionError(error: unknown): ActionError {
+export function parseActionError(error: any): ActionError {
   // ---- ZOD ----
   const zodIssues = extractZodIssues(error);
   if (zodIssues) {
@@ -71,7 +71,6 @@ export function parseActionError(error: unknown): ActionError {
     typeof error === "object" &&
     "name" in error &&
     "code" in error &&
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (error as any).name === "PrismaClientKnownRequestError"
   ) {
     const prismaError = error as PrismaClientKnownRequestError;
@@ -103,6 +102,9 @@ export function parseActionError(error: unknown): ActionError {
   // ---- FALLBACK ----
   return {
     success: false,
-    message: "Something went wrong. Please try again.",
+    message:
+      typeof error.message === "string"
+        ? error.message
+        : JSON.stringify(error.message),
   };
 }
