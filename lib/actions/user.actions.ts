@@ -9,7 +9,8 @@ import { parseActionError } from "../utils";
 
 // Sign in the user with credentials
 export async function signInWithCredentials(
-  prevState: unknown,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  prevState: any,
   formData: FormData
 ) {
   try {
@@ -35,7 +36,8 @@ export async function signOutUser() {
 }
 
 // Sign up user
-export async function signUpUser(prevState: unknown, formData: FormData) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function signUpUser(prevState: any, formData: FormData) {
   try {
     const user = signUpFormSchema.parse({
       name: formData.get("name"),

@@ -1,9 +1,10 @@
+import AddToCart from "@/components/shared/product/add-to-cart";
 import ProductImages from "@/components/shared/product/product-images";
 import ProductPrice from "@/components/shared/product/product-price";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getProductBySlug } from "@/lib/actions/product.actions";
+import { CartItem } from "@/types";
 import { notFound } from "next/navigation";
 
 interface Props {
@@ -15,6 +16,15 @@ const SingleProduct = async ({ params }: Props) => {
   const product = await getProductBySlug(slug);
 
   if (!product) notFound();
+
+  const item: CartItem = {
+    productId: product.id,
+    image: product.images[0],
+    name: product.name,
+    price: product.price,
+    slug: product.slug,
+    qty: 1,
+  };
 
   return (
     <>
@@ -64,9 +74,7 @@ const SingleProduct = async ({ params }: Props) => {
                     <Badge variant="destructive">Out of Stock</Badge>
                   )}
                 </div>
-                {product.stock > 0 && (
-                  <Button className="w-full mt-auto">Add to Cart</Button>
-                )}
+                {product.stock > 0 && <AddToCart item={item} />}
               </CardContent>
             </Card>
           </div>

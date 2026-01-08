@@ -38,7 +38,9 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
+  carts         Cart[]
 
+  // NextAuth’s Prisma Adapter expects those exact table names: users, accounts, sessions, verification_tokens
   @@map("users")
 }
 
@@ -62,6 +64,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  // NextAuth’s Prisma Adapter expects those exact table names: users, accounts, sessions, verification_tokens
   @@map("accounts")
 }
 
@@ -72,6 +75,7 @@ model Session {
   expires      DateTime @db.Timestamp(6)
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // NextAuth’s Prisma Adapter expects those exact table names: users, accounts, sessions, verification_tokens
   @@map("sessions")
 }
 
@@ -81,5 +85,22 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+  // NextAuth’s Prisma Adapter expects those exact table names: users, accounts, sessions, verification_tokens
   @@map("verification_tokens")
+}
+
+model Cart {
+  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String? @db.Uuid
+  sessionCartId String  @unique
+  items         Json[]  @default([]) @db.Json
+
+  itemsPrice    Decimal @default(0) @db.Decimal(12, 2)
+  totalPrice    Decimal @default(0) @db.Decimal(12, 2)
+  shippingPrice Decimal @default(0) @db.Decimal(12, 2)
+  taxPrice      Decimal @default(0) @db.Decimal(12, 2)
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

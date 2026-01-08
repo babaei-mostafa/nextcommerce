@@ -55,6 +55,8 @@
   --color-accent-foreground: hsl(var(--accent-foreground));
   --color-destructive: hsl(var(--destructive));
   --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-success: hsl(var(--success));
+  --color-warning: hsl(var(--warning));
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
@@ -76,6 +78,8 @@
   --accent: 210 40% 96.1%;
   --accent-foreground: 222.2 47.4% 11.2%;
   --destructive: 0 84.2% 60.2%;
+  --success: 142 76% 45%;
+  --warning: 38 92% 50%;
   --destructive-foreground: 210 40% 98%;
   --border: 214.3 31.8% 91.4%;
   --input: 214.3 31.8% 91.4%;
@@ -121,4 +125,28 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Base toast style */
+[data-sonner-toast] {
+  @apply !bg-card text-foreground shadow-md border border-border;
+}
+
+/* Success */
+[data-sonner-toast][data-type="success"] {
+  @apply !bg-success border-success/30;
+}
+
+/* Error */
+[data-sonner-toast][data-type="error"] {
+  @apply !bg-destructive border-destructive/30;
+}
+
+/* Warning */
+[data-sonner-toast][data-type="warning"] {
+  @apply !bg-warning border-warning/30;
+}
+
+[data-sonner-toast] {
+  @apply transition-all duration-300;
 }
