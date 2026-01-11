@@ -3,6 +3,7 @@ import ProductImages from "@/components/shared/product/product-images";
 import ProductPrice from "@/components/shared/product/product-price";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { getMyCart } from "@/lib/actions/cart.actions";
 import { getProductBySlug } from "@/lib/actions/product.actions";
 import { CartItem } from "@/types";
 import { notFound } from "next/navigation";
@@ -16,6 +17,8 @@ const SingleProduct = async ({ params }: Props) => {
   const product = await getProductBySlug(slug);
 
   if (!product) notFound();
+
+  const cart = await getMyCart()
 
   const item: CartItem = {
     productId: product.id,
@@ -74,7 +77,7 @@ const SingleProduct = async ({ params }: Props) => {
                     <Badge variant="destructive">Out of Stock</Badge>
                   )}
                 </div>
-                {product.stock > 0 && <AddToCart item={item} />}
+                {product.stock > 0 && <AddToCart item={item} cart={cart} />}
               </CardContent>
             </Card>
           </div>

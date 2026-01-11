@@ -65,9 +65,7 @@ export async function signUpUser(prevState: any, formData: FormData) {
     return { success: true, message: "User registered successfully" };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.log("Inside catch, before isRedirect");
     if (isRedirectError(error)) throw error;
-    console.log("Inside catch, after isRedirect");
 
     return parseActionError(error);
   }
