@@ -4,10 +4,11 @@ import { useActionState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Minus, Plus, Loader } from "lucide-react";
+import { Plus, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { addItemToCart, removeItemFromCart } from "@/lib/actions/cart.actions";
+import { addItemToCart } from "@/lib/actions/cart.actions";
 import { Cart, CartItem } from "@/types";
+import AddRemoveButtons from "./add-remove-btns";
 
 interface Props {
   item: CartItem;
@@ -18,11 +19,6 @@ const AddToCart = ({ item, cart }: Props) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [addData, addAction] = useActionState(addItemToCart, {
-    success: false,
-    message: "",
-  });
-
-  const [removeData, removeAction] = useActionState(removeItemFromCart, {
     success: false,
     message: "",
   });
@@ -42,27 +38,11 @@ const AddToCart = ({ item, cart }: Props) => {
     } else if (addData.message) {
       toast.error(addData.message);
     }
-  }, [addData, router, item.name]);
-
-  // Handle remove feedback
-  useEffect(() => {
-    if (removeData.success) {
-      toast.success(removeData.message);
-      router.refresh();
-    } else if (removeData.message) {
-      toast.error(removeData.message);
-    }
-  }, [removeData, router]);
+  }, [addData, router]);
 
   const handleAddToCart = () => {
     startTransition(() => {
       addAction(item);
-    });
-  };
-
-  const handleRemoveFromCart = () => {
-    startTransition(() => {
-      removeAction(item.productId);
     });
   };
 
@@ -71,33 +51,7 @@ const AddToCart = ({ item, cart }: Props) => {
     cart && cart.items.find((elem) => elem.productId === item.productId);
 
   return existItem ? (
-    <div className="w-full flex justify-center">
-      <Button
-        type="button"
-        variant="outline"
-        className="h-4 w-4"
-        onClick={handleRemoveFromCart}
-      >
-        {isPending ? (
-          <Loader className="w-4 h-4 animate-spin" />
-        ) : (
-          <Minus className="w-4 h-4" />
-        )}
-      </Button>
-      <span className="px-2">{existItem.qty}</span>
-      <Button
-        type="button"
-        variant="outline"
-        className="h-4 w-4"
-        onClick={handleAddToCart}
-      >
-        {isPending ? (
-          <Loader className="w-4 h-4 animate-spin" />
-        ) : (
-          <Plus className="w-4 h-4" />
-        )}
-      </Button>
-    </div>
+    <AddRemoveButtons item={item} cart={cart} />
   ) : (
     <Button className="w-full mt-auto" type="button" onClick={handleAddToCart}>
       {isPending ? (
