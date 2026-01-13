@@ -1,3 +1,5 @@
+import { ShippingAddress } from "@/types";
+
 export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "Nextcommerce";
 export const APP_DESCRIPTION =
   process.env.NEXT_PUBLIC_APP_DESCRIPTION ||
@@ -8,7 +10,15 @@ export const LATEST_PRODUCTS_LIMIT =
   Number(process.env.LATEST_PRODUCTS_LIMIT) || 4;
 
 export const TAX = 0.15;
-export const SHIPPING_PRICE = 10
+export const SHIPPING_PRICE = 10;
+
+export const SHIPPING_ADDRESS_DEFAULT_VALUES: ShippingAddress = {
+  fullName: "",
+  streetAddress: "",
+  city: "",
+  postalCode: "",
+  country: "",
+};
 
 export const signInDefaultValues = {
   email: "",

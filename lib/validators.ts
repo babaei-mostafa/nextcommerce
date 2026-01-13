@@ -76,5 +76,31 @@ export const insertCartSchema = z.object({
   shippingPrice: currency,
   taxPrice: currency,
   sessionCartId: z.string().min(1, "Session cart id is required"),
-  userId: z.string().optional().nullable()
+  userId: z.string().optional().nullable(),
+});
+
+// Schema for the shipping address
+export const shippingAddressSchema = z.object({
+  fullName: z
+    .string()
+    .nonempty("Name is required")
+    .min(3, "Name must be at least 3 characters"),
+  streetAddress: z
+    .string()
+    .nonempty("Address is required")
+    .min(3, "Address must be at least 3 characters"),
+  city: z
+    .string()
+    .nonempty("City is required")
+    .min(3, "City must be at least 3 characters"),
+  postalCode: z
+    .string()
+    .nonempty("Postal code is required")
+    .min(3, "Postal code must be at least 3 characters"),
+  country: z
+    .string()
+    .nonempty("Country is required")
+    .min(3, "Country must be at least 3 characters"),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
 });
