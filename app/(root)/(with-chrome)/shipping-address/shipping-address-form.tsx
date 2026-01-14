@@ -64,7 +64,7 @@ const ShippingAddressForm = ({ address }: Props) => {
             className="space-y-4"
             onSubmit={form.handleSubmit(onSubmit)}
           >
-            <div className="flex flex-col gap-5 md:flex-row">
+            <div className="flex flex-col md:flex-row gap-5">
               <FormField
                 control={form.control}
                 name="fullName"

@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import {
+  paymentMethodSchema,
   shippingAddressSchema,
   signInFormSchema,
   signUpFormSchema,
@@ -10,11 +12,10 @@ import { prisma } from "@/db/prisma";
 import { hashSync } from "bcrypt-ts-edge";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { parseActionError } from "../utils";
-import { ShippingAddress } from "@/types";
+import { PaymentMethod, ShippingAddress } from "@/types";
 
 // Sign in the user with credentials
 export async function signInWithCredentials(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   prevState: any,
   formData: FormData
 ) {
@@ -41,7 +42,6 @@ export async function signOutUser() {
 }
 
 // Sign up user
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function signUpUser(prevState: any, formData: FormData) {
   try {
     const user = signUpFormSchema.parse({
@@ -68,7 +68,6 @@ export async function signUpUser(prevState: any, formData: FormData) {
     });
 
     return { success: true, message: "User registered successfully" };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (isRedirectError(error)) throw error;
 
@@ -84,7 +83,6 @@ export async function getUserById(userId: string) {
 }
 
 // Update the user's address
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function updateUserAddress(prevState: any, data: ShippingAddress) {
   try {
     const session = await auth();
@@ -100,6 +98,36 @@ export async function updateUserAddress(prevState: any, data: ShippingAddress) {
     await prisma.user.update({
       where: { id: currentUser.id },
       data: { address },
+    });
+
+    return {
+      success: true,
+      message: "User updated successfully",
+    };
+  } catch (error) {
+    return parseActionError(error);
+  }
+}
+
+// Update user's payment method
+export async function updateUserPaymentMethod(
+  prevState: any,
+  data: PaymentMethod
+) {
+  try {
+    const session = await auth();
+
+    const currentUser = await prisma.user.findFirst({
+      where: { id: session?.user?.id },
+    });
+
+    if (!currentUser) throw new Error("User not found");
+
+    const paymentMethod = paymentMethodSchema.parse(data);
+
+    await prisma.user.update({
+      where: { id: currentUser.id },
+      data: { paymentMethod: paymentMethod.type },
     });
 
     return {
