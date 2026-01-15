@@ -53,7 +53,7 @@ const PaymentMethodForm = ({ preferredPaymentMethod }: Props) => {
       return;
     }
     toast.success(data.message);
-    router.push("/");
+    router.push("/place-order");
   }, [data, router]);
   return (
     <>

@@ -5,6 +5,8 @@ import {
   cartItemSchema,
   shippingAddressSchema,
   paymentMethodSchema,
+  insertOrderItemSchema,
+  insertOrderSchema,
 } from "@/lib/validators";
 
 export type Product = Omit<
@@ -23,3 +25,23 @@ export type CartItem = Omit<z.infer<typeof cartItemSchema>, "price"> & {
 };
 export type ShippingAddress = z.infer<typeof shippingAddressSchema>;
 export type PaymentMethod = z.infer<typeof paymentMethodSchema>;
+export type OrderItem = Omit<z.infer<typeof insertOrderItemSchema>, "price"> & {
+  price: string;
+};
+export type Order = Omit<
+  z.infer<typeof insertOrderSchema>,
+  "itemsPrice" | "shippingPrice" | "taxPrice" | "totalPrice"
+> & {
+  itemsPrice: string;
+  shippingPrice: string;
+  taxPrice: string;
+  totalPrice: string;
+  id: string;
+  createdAt: Date;
+  isPaid: boolean;
+  paidAt: Date | null;
+  isDelivered: boolean;
+  deliveredAt: Date | null;
+  orderItems: OrderItem[];
+  user: { name: string; email: string };
+};
