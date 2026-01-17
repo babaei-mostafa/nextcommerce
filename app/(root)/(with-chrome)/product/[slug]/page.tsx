@@ -8,6 +8,8 @@ import { getProductBySlug } from "@/lib/actions/product.actions";
 import { CartItem } from "@/types";
 import { notFound } from "next/navigation";
 
+export const revalidate = 120;
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
