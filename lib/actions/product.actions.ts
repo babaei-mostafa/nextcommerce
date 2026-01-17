@@ -4,8 +4,6 @@ import { convertToPlainObject } from "../utils";
 import { LATEST_PRODUCTS_LIMIT } from "../constants";
 import { Product } from "@/types";
 
-export const revalidate = 60;
-
 // Get latest products
 export async function getLatestProducts() {
   const data = await prisma.product.findMany({
