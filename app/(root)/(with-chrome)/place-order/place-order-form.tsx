@@ -1,11 +1,11 @@
 "use client";
 
+import React from "react";
+import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { createOrder } from "@/lib/actions/order.actions";
 import { Check, Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React from "react";
-import { useFormStatus } from "react-dom";
 
 const PlaceOrderForm = () => {
   const router = useRouter();

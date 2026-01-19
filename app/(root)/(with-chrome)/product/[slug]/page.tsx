@@ -6,21 +6,32 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getMyCart } from "@/lib/actions/cart.actions";
 import { getProductBySlug } from "@/lib/actions/product.actions";
 import { CartItem } from "@/types";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
-
-export const revalidate = 120;
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+  if (!product) notFound();
+
+  return {
+    title: product.name,
+    description: product.description,
+  };
+}
+
+export const revalidate = 120;
+
 const SingleProduct = async ({ params }: Props) => {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
-
   if (!product) notFound();
 
-  const cart = await getMyCart()
+  const cart = await getMyCart();
 
   const item: CartItem = {
     productId: product.id,
