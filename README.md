@@ -1,5 +1,21 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+Live Demo: https://nextcommerce-taupe.vercel.app/
+
+## Screenshots
+
+### Home Page
+./screenshots/homepage.jpg
+
+### Product Details Page
+./screenshots/product-details-page.jpg
+
+### Cart Page
+./screenshots/cart-page.jpg
+
+### Checkout Page
+./screenshots/checkout-page.jpg
+
 ## Getting Started
 
 First, run the development server:
