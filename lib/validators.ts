@@ -6,7 +6,7 @@ const currency = z
   .string()
   .refine(
     (value) => /^\d+(\.\d{2})?$/.test(formatNumberWithDecimal(Number(value))),
-    "Price must have exactly two decimal places"
+    "Price must have exactly two decimal places",
   );
 
 // Schema for inserting products
@@ -137,4 +137,11 @@ export const insertOrderItemSchema = z.object({
   name: z.string(),
   qty: z.number(),
   price: currency,
+});
+
+export const paymentResultSchema = z.object({
+  id: z.string(),
+  status: z.string(),
+  email_address: z.string(),
+  pricePaid: z.string(),
 });

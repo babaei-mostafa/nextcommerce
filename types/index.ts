@@ -7,6 +7,7 @@ import {
   paymentMethodSchema,
   insertOrderItemSchema,
   insertOrderSchema,
+  paymentResultSchema,
 } from "@/lib/validators";
 
 export type Product = Omit<
@@ -44,3 +45,5 @@ export type Order = Omit<
   deliveredAt: Date | null;
   orderItems: OrderItem[];
 };
+
+export type PaymentResult = z.infer<typeof paymentResultSchema>;
