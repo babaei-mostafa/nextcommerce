@@ -6,6 +6,7 @@ import { compareSync } from "bcrypt-ts-edge";
 import { NextAuthConfig } from "next-auth";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export const config = {
   pages: {
@@ -34,7 +35,7 @@ export const config = {
         if (user && user.password) {
           const isMatch = compareSync(
             credentials.password as string,
-            user.password
+            user.password,
           );
 
           // If password is correct, return user
@@ -111,6 +112,11 @@ export const config = {
           }
         }
       }
+      // Handle session updates
+      if (session?.user?.name && trigger === "update") {
+        token.name = session.user.name;
+        revalidatePath("/user/profile");
+      }
       return token;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -127,11 +133,10 @@ export const config = {
       ];
 
       // Get pathname from the req URL object
-      const {pathname} = request.nextUrl
+      const { pathname } = request.nextUrl;
 
       // Check if user is not authenticated and accessing a protected path
-      if (!auth && protectedPaths.some((p) => p.test(pathname))) return false
-
+      if (!auth && protectedPaths.some((p) => p.test(pathname))) return false;
 
       // Check for session cart cookie
       if (!request.cookies.get("sessionCartId")) {

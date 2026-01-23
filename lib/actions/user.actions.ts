@@ -13,11 +13,12 @@ import { hashSync } from "bcrypt-ts-edge";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { parseActionError } from "../utils";
 import { PaymentMethod, ShippingAddress } from "@/types";
+import { PAGE_SIZE } from "../constants";
 
 // Sign in the user with credentials
 export async function signInWithCredentials(
   prevState: any,
-  formData: FormData
+  formData: FormData,
 ) {
   try {
     const user = signInFormSchema.parse({
@@ -112,7 +113,7 @@ export async function updateUserAddress(prevState: any, data: ShippingAddress) {
 // Update user's payment method
 export async function updateUserPaymentMethod(
   prevState: any,
-  data: PaymentMethod
+  data: PaymentMethod,
 ) {
   try {
     const session = await auth();
@@ -128,6 +129,58 @@ export async function updateUserPaymentMethod(
     await prisma.user.update({
       where: { id: currentUser.id },
       data: { paymentMethod: paymentMethod.type },
+    });
+
+    return {
+      success: true,
+      message: "User updated successfully",
+    };
+  } catch (error) {
+    return parseActionError(error);
+  }
+}
+
+// Get user's orders
+export async function getMyOrders({
+  limit = PAGE_SIZE,
+  page,
+}: {
+  limit?: number;
+  page: number;
+}) {
+  const session = await auth();
+  if (!session) throw new Error("User is not authorized");
+
+  const data = await prisma.order.findMany({
+    where: { userId: session?.user?.id },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+
+  const dataCount = await prisma.order.count({
+    where: { userId: session?.user?.id },
+  });
+
+  return {
+    data,
+    totalPages: Math.ceil(dataCount / limit),
+  };
+}
+
+// Update the user profile
+export async function updateProfile(user: { name: string; email: string }) {
+  try {
+    const session = await auth();
+
+    const currentUser = await prisma.user.findFirst({
+      where: { id: session?.user?.id },
+    });
+    if (!currentUser) throw new Error("User not found");
+
+    await prisma.user.update({
+      where: { id: currentUser.id },
+      data: { name: user.name },
     });
 
     return {
