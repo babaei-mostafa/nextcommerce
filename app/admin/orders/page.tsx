@@ -1,5 +1,6 @@
+import { deleteOrder, getAllOrders } from "@/lib/actions/order.actions";
+import { requireAdmin } from "@/lib/auth-guard";
 import Pagination from "@/components/shared/pagination";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -8,23 +9,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getMyOrders } from "@/lib/actions/user.actions";
 import { formatCurrency, formatDateTime, formatId } from "@/lib/utils";
 import { Metadata } from "next";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import DeleteDialog from "@/components/shared/delete-dialog";
 
 export const metadata: Metadata = {
-  title: "My Orders",
+  title: "Admin Orders",
 };
 
 interface Props {
   searchParams: Promise<{ page: string }>;
 }
 
-const OrdersPage = async ({ searchParams }: Props) => {
-  const { page } = await searchParams;
-  const orders = await getMyOrders({ page: Number(page) || 1 });
-
+const AdminOrdersPage = async ({ searchParams }: Props) => {
+  await requireAdmin();
+  const { page = "1" } = await searchParams;
+  const orders = await getAllOrders({ page: Number(page) });
+  console.log(orders);
   return (
     <div className="space-y-2">
       <h2 className="h2-bold">Orders</h2>
@@ -63,10 +66,11 @@ const OrdersPage = async ({ searchParams }: Props) => {
                       ? formatDateTime(order.deliveredAt).dateTime
                       : "Not Delivered"}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="space-x-2">
                     <Button asChild variant="outline">
                       <Link href={`/order/${order.id}`}>Details</Link>
                     </Button>
+                    <DeleteDialog id={order.id} action={deleteOrder} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -84,4 +88,4 @@ const OrdersPage = async ({ searchParams }: Props) => {
   );
 };
 
-export default OrdersPage;
+export default AdminOrdersPage;

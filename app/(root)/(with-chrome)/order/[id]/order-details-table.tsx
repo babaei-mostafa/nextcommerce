@@ -24,13 +24,16 @@ import {
   createPayPalOrder,
 } from "@/lib/actions/order.actions";
 import { toast } from "sonner";
+import MarkAsPaidButton from "./mark-as-paid-button";
+import MarkAsDeliveredButton from "./mark-as-delivered-button";
 
 interface Props {
   order: Order;
   paypalClientId: string;
+  isAdmin: boolean;
 }
 
-const OrderDetailsTable = ({ order, paypalClientId }: Props) => {
+const OrderDetailsTable = ({ order, paypalClientId, isAdmin }: Props) => {
   const {
     id,
     shippingAddress,
@@ -62,7 +65,7 @@ const OrderDetailsTable = ({ order, paypalClientId }: Props) => {
     const res = await createPayPalOrder(order.id);
     if (!res.success) {
       toast.error(res.message);
-      throw new Error(res.message); 
+      throw new Error(res.message);
     }
     return res.data;
   };
@@ -104,7 +107,7 @@ const OrderDetailsTable = ({ order, paypalClientId }: Props) => {
               </p>
               {isDelivered ? (
                 <Badge variant="secondary">
-                  Paid at {formatDateTime(deliveredAt!).dateTime}
+                  Delivered at {formatDateTime(deliveredAt!).dateTime}
                 </Badge>
               ) : (
                 <Badge variant="destructive">Not delivered</Badge>
@@ -182,6 +185,14 @@ const OrderDetailsTable = ({ order, paypalClientId }: Props) => {
                     />
                   </PayPalScriptProvider>
                 </div>
+              )}
+
+              {/* Cash On Delivery */}
+              {isAdmin && !isPaid && paymentMethod === "CashOnDelivery" && (
+                <MarkAsPaidButton orderId={order.id} />
+              )}
+              {isAdmin && isPaid && !isDelivered && (
+                <MarkAsDeliveredButton orderId={order.id} />
               )}
             </CardContent>
           </Card>
