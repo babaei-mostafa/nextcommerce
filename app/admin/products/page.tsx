@@ -26,7 +26,7 @@ const AdminProductsPage = async ({ searchParams }: Props) => {
   const { query = "", category = "" } = await searchParams;
   const page = Number((await searchParams).page) || 1;
 
-  const products = await getAllProducts({ query, page, category, limit: 2 });
+  const products = await getAllProducts({ query, page, category });
 
   return (
     <div className="space-y-2">
@@ -70,7 +70,7 @@ const AdminProductsPage = async ({ searchParams }: Props) => {
           ))}
         </TableBody>
       </Table>
-      {products?.totalPages && products.totalPages > 1 && (
+      {products.totalPages > 1 && (
         <Pagination page={page} totalPages={products.totalPages} />
       )}
     </div>

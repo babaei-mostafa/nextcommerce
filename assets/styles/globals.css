@@ -150,3 +150,12 @@
 [data-sonner-toast] {
   @apply transition-all duration-300;
 }
+
+/* Uploadting Button text override */
+html.dark .upload-field label {
+  color: #fff !important;
+}
+
+.upload-field label {
+  color: #000 !important;
+}

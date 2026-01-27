@@ -8,6 +8,7 @@ import {
   insertOrderItemSchema,
   insertOrderSchema,
   paymentResultSchema,
+  updateProductSchema,
 } from "@/lib/validators";
 
 export type Product = Omit<
@@ -47,3 +48,8 @@ export type Order = Omit<
 };
 
 export type PaymentResult = z.infer<typeof paymentResultSchema>;
+
+export type ProductFormValues = Omit<
+  z.infer<typeof updateProductSchema>,
+  "id"
+> & { id?: string };
