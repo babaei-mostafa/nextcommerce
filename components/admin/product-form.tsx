@@ -89,6 +89,10 @@ const ProductForm = ({ type, product, productId }: Props) => {
     },
     [form],
   );
+
+  const handleUploadError = useCallback((error: Error) => {
+    toast.error(`Error! ${error.message}`);
+  }, []);
   return (
     <Form {...form}>
       <form
@@ -225,9 +229,7 @@ const ProductForm = ({ type, product, productId }: Props) => {
                         <UploadButton
                           endpoint="imageUploader"
                           onClientUploadComplete={handleUploadComplete}
-                          onUploadError={(error: Error) => {
-                            toast.error(`Error! ${error.message}`);
-                          }}
+                          onUploadError={handleUploadError}
                         />
                       </FormControl>
                     </div>
