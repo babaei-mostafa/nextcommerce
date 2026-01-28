@@ -22,8 +22,9 @@ import { createProduct, updateProduct } from "@/lib/actions/product.actions";
 import { toast } from "sonner";
 import { Card, CardContent } from "../ui/card";
 import Image from "next/image";
-import { UploadButton } from "@/lib/uploadthing";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
+import { Checkbox } from "../ui/checkbox";
+import CustomUploadButton from "../shared/custom-upload-button";
 
 interface Props {
   type: "Create" | "Update";
@@ -40,7 +41,8 @@ const ProductForm = ({ type, product, productId }: Props) => {
       type === "Update"
         ? zodResolver(updateProductSchema)
         : zodResolver(insertProductSchema),
-    defaultValues: productDefaultValues,
+    defaultValues:
+      product && type === "Update" ? product : productDefaultValues,
   });
 
   const onSubmit: SubmitHandler<ProductFormValues> = async (values) => {
@@ -63,6 +65,8 @@ const ProductForm = ({ type, product, productId }: Props) => {
         router.push("/admin/products");
         return;
       }
+
+      console.log({ ...values, id: productId });
       const res = await updateProduct({ ...values, id: productId });
 
       if (!res.success) {
@@ -79,20 +83,35 @@ const ProductForm = ({ type, product, productId }: Props) => {
     name: "images",
   });
 
-  const handleUploadComplete = useCallback(
+  const isFeatured = useWatch({
+    control: form.control,
+    name: "isFeatured",
+  });
+
+  const banner = useWatch({
+    control: form.control,
+    name: "banner",
+  });
+
+  const handleUploadImageComplete = useCallback(
     (res: { url: string }[]) => {
       const currentImages = form.getValues("images") ?? [];
       form.setValue("images", [...currentImages, res[0].url], {
         shouldDirty: true,
       });
-      // form.setValue("images", [...images, res[0].url]);
     },
     [form],
   );
 
-  const handleUploadError = useCallback((error: Error) => {
-    toast.error(`Error! ${error.message}`);
-  }, []);
+  const handleUploadBannerComplete = useCallback(
+    (res: { url: string }[]) => {
+      form.setValue("banner", res[0].url, {
+        shouldDirty: true,
+      });
+    },
+    [form],
+  );
+
   return (
     <Form {...form}>
       <form
@@ -226,10 +245,8 @@ const ProductForm = ({ type, product, productId }: Props) => {
                         />
                       ))}
                       <FormControl>
-                        <UploadButton
-                          endpoint="imageUploader"
-                          onClientUploadComplete={handleUploadComplete}
-                          onUploadError={handleUploadError}
+                        <CustomUploadButton
+                          handleUploadComplete={handleUploadImageComplete}
                         />
                       </FormControl>
                     </div>
@@ -240,7 +257,45 @@ const ProductForm = ({ type, product, productId }: Props) => {
             )}
           />
         </div>
-        <div className="upload-field">{/* isFeatured */}</div>
+        <div className="upload-field">
+          {/* isFeatured */}
+          Featured Product
+          <Card>
+            <CardContent className="space-y-2 mt-2">
+              <FormField
+                control={form.control}
+                name="isFeatured"
+                render={({ field }) => (
+                  <FormItem className="flex items-center">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel>Is Featured?</FormLabel>
+                  </FormItem>
+                )}
+              />
+
+              {isFeatured && banner && (
+                <Image
+                  src={banner}
+                  alt="banner image"
+                  className="w-full object-cover object-center rounded-sm"
+                  width={929}
+                  height={680}
+                />
+              )}
+
+              {isFeatured && !banner && (
+                <CustomUploadButton
+                  handleUploadComplete={handleUploadBannerComplete}
+                />
+              )}
+            </CardContent>
+          </Card>
+        </div>
         <div>
           {/* Description */}
           <FormField
