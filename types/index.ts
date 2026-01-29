@@ -9,6 +9,7 @@ import {
   insertOrderSchema,
   paymentResultSchema,
   updateProductSchema,
+  updateUserSchema,
 } from "@/lib/validators";
 
 export type Product = Omit<
@@ -53,3 +54,7 @@ export type ProductFormValues = Omit<
   z.infer<typeof updateProductSchema>,
   "id"
 > & { id?: string };
+
+export type UpdateUser = Omit<z.infer<typeof updateUserSchema>, "email"> & {
+  email: string | null;
+};

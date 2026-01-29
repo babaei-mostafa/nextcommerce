@@ -14,6 +14,7 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { parseActionError } from "../utils";
 import { PaymentMethod, ShippingAddress } from "@/types";
 import { PAGE_SIZE } from "../constants";
+import { revalidatePath } from "next/cache";
 
 // Sign in the user with credentials
 export async function signInWithCredentials(
@@ -187,6 +188,44 @@ export async function updateProfile(user: { name: string; email: string }) {
       success: true,
       message: "User updated successfully",
     };
+  } catch (error) {
+    return parseActionError(error);
+  }
+}
+
+// Get all users
+export async function getAllUsers({
+  query,
+  limit = PAGE_SIZE,
+  page,
+}: {
+  query: string;
+  limit?: number;
+  page: number;
+}) {
+  const data = await prisma.user.findMany({
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+
+  const dataCount = await prisma.user.count();
+
+  return {
+    data,
+    totalPages: Math.ceil(dataCount / limit),
+  };
+}
+
+// Delete a user
+export async function deleteUser(userId: string) {
+  try {
+    const user = await prisma.user.findFirst({ where: { id: userId } });
+    if (!user) throw new Error("User not found");
+
+    await prisma.user.delete({ where: { id: userId } });
+    revalidatePath("/admin/users");
+    return { success: true, message: "User deleted successfully" };
   } catch (error) {
     return parseActionError(error);
   }

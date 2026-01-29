@@ -23,10 +23,13 @@ interface Props {
 }
 
 const AdminProductsPage = async ({ searchParams }: Props) => {
-  const { query = "", category = "" } = await searchParams;
-  const page = Number((await searchParams).page) || 1;
+  const { query = "", category = "", page = "1" } = await searchParams;
 
-  const products = await getAllProducts({ query, page, category });
+  const products = await getAllProducts({
+    query,
+    page: Number(page),
+    category,
+  });
 
   return (
     <div className="space-y-2">

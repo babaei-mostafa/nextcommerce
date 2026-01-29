@@ -65,8 +65,7 @@ const ProductForm = ({ type, product, productId }: Props) => {
         router.push("/admin/products");
         return;
       }
-
-      console.log({ ...values, id: productId });
+      
       const res = await updateProduct({ ...values, id: productId });
 
       if (!res.success) {

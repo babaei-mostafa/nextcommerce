@@ -16,8 +16,6 @@ const AdminProductUpdatePage = async ({ params }: Props) => {
   const product = await getProductById(id);
   if (!product) notFound();
 
-  console.log(product)
-
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       <h1 className="h2-bold">Update Product</h1>
