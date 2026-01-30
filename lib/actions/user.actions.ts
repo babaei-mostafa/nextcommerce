@@ -12,7 +12,7 @@ import { prisma } from "@/db/prisma";
 import { hashSync } from "bcrypt-ts-edge";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { parseActionError } from "../utils";
-import { PaymentMethod, ShippingAddress } from "@/types";
+import { PaymentMethod, ShippingAddress, UpdateUser } from "@/types";
 import { PAGE_SIZE } from "../constants";
 import { revalidatePath } from "next/cache";
 
@@ -203,7 +203,12 @@ export async function getAllUsers({
   limit?: number;
   page: number;
 }) {
+  const queryFilter =
+    query && query !== "all"
+      ? ({ name: { contains: query, mode: "insensitive" } } as any)
+      : {};
   const data = await prisma.user.findMany({
+    where: {...queryFilter},
     orderBy: { createdAt: "desc" },
     take: limit,
     skip: (page - 1) * limit,
@@ -226,6 +231,24 @@ export async function deleteUser(userId: string) {
     await prisma.user.delete({ where: { id: userId } });
     revalidatePath("/admin/users");
     return { success: true, message: "User deleted successfully" };
+  } catch (error) {
+    return parseActionError(error);
+  }
+}
+
+// Update a user
+export async function updateUser(user: UpdateUser) {
+  try {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { name: user.name, role: user.role },
+    });
+
+    revalidatePath("/admin/users");
+    return {
+      success: true,
+      message: "User updated successfully",
+    };
   } catch (error) {
     return parseActionError(error);
   }

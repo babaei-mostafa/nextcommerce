@@ -11,7 +11,7 @@ import { prisma } from "@/db/prisma";
 import { CartItem, PaymentResult } from "@/types";
 import { paypal } from "../paypal";
 import { revalidatePath } from "next/cache";
-import { Prisma } from "../generated/prisma/client";
+import { Prisma, PrismaClient } from "../generated/prisma/client";
 import { PAGE_SIZE } from "../constants";
 
 // Create order and create the order items
@@ -302,13 +302,27 @@ export async function GetOrderSummary() {
 
 // Get all orders
 export async function getAllOrders({
+  query,
   limit = PAGE_SIZE,
   page,
 }: {
+  query: string;
   limit?: number;
   page: number;
 }) {
+  const queryFilter =
+    query && query !== "all"
+      ? ({
+          user: {
+            name: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+        } as any)
+      : {};
   const data = await prisma.order.findMany({
+    where: { ...queryFilter },
     orderBy: { createdAt: "desc" },
     take: limit,
     skip: (page - 1) * limit,

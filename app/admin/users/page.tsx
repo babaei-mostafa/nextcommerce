@@ -26,11 +26,25 @@ interface Props {
 const AdminUsersPage = async ({ searchParams }: Props) => {
   const { query = "", page = "1" } = await searchParams;
   const users = await getAllUsers({ query, page: Number(page) });
-  console.log(users);
+
   return (
     <div className="space-y-2">
       <div className="flex-between">
-        <h1 className="h2-bold">Users</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="h2-bold">Users</h1>
+          {query && (
+            <div className="flex items-center gap-2">
+              <div>
+                Filtered by <i>&quot;{query}&quot;</i>{" "}
+              </div>
+              <Link href="/admin/users">
+                <Button variant="outline" size="sm">
+                  Remove Filter
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
         <Button asChild>
           <Link href="/admin/users/create">Create User</Link>
         </Button>

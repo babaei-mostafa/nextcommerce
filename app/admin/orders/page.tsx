@@ -20,17 +20,31 @@ export const metadata: Metadata = {
 };
 
 interface Props {
-  searchParams: Promise<{ page: string }>;
+  searchParams: Promise<{ page: string; query: string }>;
 }
 
 const AdminOrdersPage = async ({ searchParams }: Props) => {
   await requireAdmin();
-  const { page = "1" } = await searchParams;
-  const orders = await getAllOrders({ page: Number(page) });
+  const { page = "1", query = "" } = await searchParams;
+  const orders = await getAllOrders({ page: Number(page), query });
   console.log(orders);
   return (
     <div className="space-y-2">
-      <h2 className="h2-bold">Orders</h2>
+      <div className="flex items-center gap-2">
+        <h1 className="h2-bold">Orders</h1>
+        {query && (
+          <div className="flex items-center gap-2">
+            <div>
+              Filtered by <i>&quot;{query}&quot;</i>{" "}
+            </div>
+            <Link href="/admin/orders">
+              <Button variant="outline" size="sm">
+                Remove Filter
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
       {!orders || orders.data.length === 0 ? (
         <div>
           Orders list is empty. <Link href="/cart">Go to Your Cart</Link>
@@ -42,6 +56,7 @@ const AdminOrdersPage = async ({ searchParams }: Props) => {
               <TableRow>
                 <TableHead>ID</TableHead>
                 <TableHead>DATE</TableHead>
+                <TableHead>BUYER</TableHead>
                 <TableHead>TOTAL</TableHead>
                 <TableHead>PAID</TableHead>
                 <TableHead>DELIVERED</TableHead>
@@ -55,12 +70,14 @@ const AdminOrdersPage = async ({ searchParams }: Props) => {
                   <TableCell>
                     {formatDateTime(order.createdAt).dateTime}
                   </TableCell>
+                  <TableCell>{order.user.name}</TableCell>
                   <TableCell>{formatCurrency(order.totalPrice)}</TableCell>
                   <TableCell>
                     {order.isPaid && order.paidAt
                       ? formatDateTime(order.paidAt).dateTime
                       : "Not Paid"}
                   </TableCell>
+
                   <TableCell>
                     {order.isDelivered && order.deliveredAt
                       ? formatDateTime(order.deliveredAt).dateTime

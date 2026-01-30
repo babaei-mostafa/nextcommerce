@@ -34,7 +34,21 @@ const AdminProductsPage = async ({ searchParams }: Props) => {
   return (
     <div className="space-y-2">
       <div className="flex-between">
-        <h1 className="h2-bold">Products</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="h2-bold">Products</h1>
+          {query && (
+            <div className="flex items-center gap-2">
+              <div>
+                Filtered by <i>&quot;{query}&quot;</i>{" "}
+              </div>
+              <Link href="/admin/products">
+                <Button variant="outline" size="sm">
+                  Remove Filter
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
         <Button asChild>
           <Link href="/admin/products/create">Create Product</Link>
         </Button>

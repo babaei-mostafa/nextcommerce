@@ -1,7 +1,7 @@
 import { getUserById } from "@/lib/actions/user.actions";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import UpdateUserForm from "../../../../components/admin/update-user-form";
+import UpdateUserForm from "@/components/admin/update-user-form";
 
 export const metadata: Metadata = {
   title: "Update User",

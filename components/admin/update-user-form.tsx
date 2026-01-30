@@ -22,6 +22,9 @@ import {
   SelectItem,
 } from "../ui/select";
 import { USER_ROLES } from "@/lib/constants";
+import { Button } from "../ui/button";
+import { toast } from "sonner";
+import { updateUser } from "@/lib/actions/user.actions";
 
 interface Props {
   user: UpdateUser;
@@ -36,12 +39,29 @@ const UpdateUserForm = ({ user }: Props) => {
     defaultValues: user,
   });
 
-  const onSubmit = () => {
-    return;
+  const onSubmit = async (values: UpdateUser) => {
+    try {
+
+      const res = await updateUser(values);
+
+      if (!res.success) {
+        return toast.error(res.message);
+      }
+
+      toast.success(res.message);
+      form.reset();
+      router.push("/admin/users");
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
   };
   return (
     <Form {...form}>
-      <form method="POST" onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        method="POST"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-2"
+      >
         {/* Email */}
         <div>
           <FormField
@@ -96,7 +116,7 @@ const UpdateUserForm = ({ user }: Props) => {
                   <SelectContent>
                     {USER_ROLES.map((role) => (
                       <SelectItem key={role} value={role}>
-                        {role}
+                        {role.charAt(0).toUpperCase() + role.slice(1)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -105,6 +125,15 @@ const UpdateUserForm = ({ user }: Props) => {
               </FormItem>
             )}
           />
+        </div>
+        <div className="mt-4">
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={form.formState.isSubmitting}
+          >
+            {form.formState.isSubmitting ? "Submitting..." : "Update User"}
+          </Button>
         </div>
       </form>
     </Form>

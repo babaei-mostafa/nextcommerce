@@ -31,7 +31,7 @@ export async function getProductById(productId: string) {
     where: { id: productId },
   });
 
-  return convertToPlainObject(data)
+  return convertToPlainObject(data);
 }
 
 // Get all products
@@ -46,7 +46,13 @@ export async function getAllProducts({
   page: number;
   category?: string;
 }) {
+  const queryFilter =
+    query && query !== "all"
+      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ({ name: { contains: query, mode: "insensitive" } } as any)
+      : {};
   const data = await prisma.product.findMany({
+    where: { ...queryFilter },
     orderBy: { createdAt: "desc" },
     take: limit,
     skip: (page - 1) * limit,
