@@ -7,6 +7,7 @@ import { Product, ProductFormValues } from "@/types";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 import { insertProductSchema, updateProductSchema } from "../validators";
+import { Prisma } from "../generated/prisma/client";
 
 // Get latest products
 export async function getLatestProducts() {
@@ -40,20 +41,66 @@ export async function getAllProducts({
   limit = PAGE_SIZE,
   page,
   category,
+  sort,
+  price,
+  rating,
 }: {
   query: string;
   limit?: number;
   page: number;
   category?: string;
+  sort?: string;
+  price?: string;
+  rating?: string;
 }) {
-  const queryFilter =
+  // Query filter
+  const queryFilter: Prisma.ProductWhereInput =
     query && query !== "all"
-      ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ({ name: { contains: query, mode: "insensitive" } } as any)
+      ? {
+          name: { contains: query, mode: "insensitive" },
+        }
       : {};
+
+  // Category filter
+  const categoryFilter: Prisma.ProductWhereInput =
+    category && category !== "all" ? { category } : {};
+
+  // Price filter
+  const priceFilter: Prisma.ProductWhereInput =
+    price && price !== "all"
+      ? {
+          price: {
+            gte: Number(price.split("-")[0]),
+            lte: Number(price.split("-")[1]),
+          },
+        }
+      : {};
+
+  // Rating filter
+  const ratingFilter: Prisma.ProductWhereInput =
+    rating && rating !== "all"
+      ? {
+          rating: {
+            gte: Number(rating),
+          },
+        }
+      : {};
+
   const data = await prisma.product.findMany({
-    where: { ...queryFilter },
-    orderBy: { createdAt: "desc" },
+    where: {
+      ...queryFilter,
+      ...categoryFilter,
+      ...priceFilter,
+      ...ratingFilter,
+    },
+    orderBy:
+      sort === "lowest"
+        ? { price: "asc" }
+        : sort === "highest"
+          ? { price: "desc" }
+          : sort === "rating"
+            ? { rating: "desc" }
+            : { createdAt: "desc" },
     take: limit,
     skip: (page - 1) * limit,
   });
