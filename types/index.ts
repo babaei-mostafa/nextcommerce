@@ -10,6 +10,7 @@ import {
   paymentResultSchema,
   updateProductSchema,
   updateUserSchema,
+  insertReviewSchema,
 } from "@/lib/validators";
 
 export type Product = Omit<
@@ -20,6 +21,7 @@ export type Product = Omit<
   rating: string;
   createdAt: Date;
   price: string;
+  numReviews: number;
 };
 
 export type Cart = z.infer<typeof insertCartSchema>;
@@ -57,4 +59,10 @@ export type ProductFormValues = Omit<
 
 export type UpdateUser = Omit<z.infer<typeof updateUserSchema>, "email"> & {
   email: string | null;
+};
+
+export type Review = z.infer<typeof insertReviewSchema> & {
+  id: string;
+  createdAt: Date;
+  user?: { name: string };
 };

@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import AddToCart from "@/components/shared/product/add-to-cart";
 import ProductImages from "@/components/shared/product/product-images";
 import ProductPrice from "@/components/shared/product/product-price";
@@ -8,6 +9,8 @@ import { getProductBySlug } from "@/lib/actions/product.actions";
 import { CartItem } from "@/types";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import ReviewList from "./review-list";
+import Rating from "@/components/shared/product/rating";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -30,6 +33,9 @@ const SingleProduct = async ({ params }: Props) => {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) notFound();
+
+  const session = await auth();
+  const userId = session?.user?.id;
 
   const cart = await getMyCart();
 
@@ -57,9 +63,8 @@ const SingleProduct = async ({ params }: Props) => {
                 {product.brand} {product.category}
               </p>
               <h1 className="h3-bold">{product.name}</h1>
-              <p>
-                {product.rating} of {product.numReviews} reviews
-              </p>
+              <Rating value={Number(product.rating)} />
+              <p>{product.numReviews} reviews</p>
               <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                 <ProductPrice
                   value={Number(product.price)}
@@ -95,6 +100,14 @@ const SingleProduct = async ({ params }: Props) => {
             </Card>
           </div>
         </div>
+      </section>
+      <section className="mt-10">
+        <h2 className="h2-bold">Customer Reviews</h2>
+        <ReviewList
+          productId={product.id}
+          productSlug={product.slug}
+          userId={userId || ""}
+        />
       </section>
     </>
   );
