@@ -27,7 +27,6 @@ const AdminOrdersPage = async ({ searchParams }: Props) => {
   await requireAdmin();
   const { page = "1", query = "" } = await searchParams;
   const orders = await getAllOrders({ page: Number(page), query });
-  console.log(orders);
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">

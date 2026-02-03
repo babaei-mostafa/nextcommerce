@@ -29,7 +29,7 @@ import MarkAsDeliveredButton from "./mark-as-delivered-button";
 import StripePayment from "./stripe-payment";
 
 interface Props {
-  order: Order;
+  order: Omit<Order, "user" | "paymentResult">;
   stripeClientSecret: string | null;
   paypalClientId: string;
   isAdmin: boolean;
