@@ -26,14 +26,21 @@ import {
 import { toast } from "sonner";
 import MarkAsPaidButton from "./mark-as-paid-button";
 import MarkAsDeliveredButton from "./mark-as-delivered-button";
+import StripePayment from "./stripe-payment";
 
 interface Props {
   order: Order;
+  stripeClientSecret: string | null;
   paypalClientId: string;
   isAdmin: boolean;
 }
 
-const OrderDetailsTable = ({ order, paypalClientId, isAdmin }: Props) => {
+const OrderDetailsTable = ({
+  order,
+  stripeClientSecret,
+  paypalClientId,
+  isAdmin,
+}: Props) => {
   const {
     id,
     shippingAddress,
@@ -174,6 +181,7 @@ const OrderDetailsTable = ({ order, paypalClientId, isAdmin }: Props) => {
                 <div>Total</div>
                 <div>{formatCurrency(totalPrice)}</div>
               </div>
+              
               {/* PayPal Payment */}
               {!isPaid && paymentMethod === "PayPal" && (
                 <div>
@@ -185,6 +193,15 @@ const OrderDetailsTable = ({ order, paypalClientId, isAdmin }: Props) => {
                     />
                   </PayPalScriptProvider>
                 </div>
+              )}
+
+              {/* Stripe Payment */}
+              {!isPaid && paymentMethod === "Stripe" && stripeClientSecret && (
+                <StripePayment
+                  clientSecret={stripeClientSecret}
+                  orderId={order.id}
+                  priceInCents={Number(order.taxPrice) * 100}
+                />
               )}
 
               {/* Cash On Delivery */}
