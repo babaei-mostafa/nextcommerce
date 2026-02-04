@@ -11,12 +11,11 @@ import { prisma } from "@/db/prisma";
 import { CartItem, PaymentResult, ShippingAddress } from "@/types";
 import { paypal } from "../paypal";
 import { revalidatePath } from "next/cache";
-import { Prisma, PrismaClient } from "../generated/prisma/client";
+import { Prisma } from "../generated/prisma/client";
 import { PAGE_SIZE } from "../constants";
 import { sendPurchaseReceipt } from "@/email";
 
 // Create order and create the order items
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createOrder() {
   try {
     const session = await auth();
@@ -257,6 +256,7 @@ export async function updateOrderToPaid({
       ...updatedOrder,
       shippingAddress: updatedOrder.shippingAddress as ShippingAddress,
       paymentResult: updatedOrder.paymentResult as PaymentResult,
+      
     },
   });
 }
