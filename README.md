@@ -21,6 +21,14 @@ Live Demo: https://nextcommerce-taupe.vercel.app/
 
 ![Checkout Page](./screenshots/checkout-page.jpg)
 
+### Place Order Page
+
+![Place Order Page](./screenshots/place-order-page.jpg)
+
+### Admin Dashboard Page
+
+![Admin Dashboard Page](./screenshots//admin-dashboard-page.jpg)
+
 ## Getting Started
 
 First, run the development server:
